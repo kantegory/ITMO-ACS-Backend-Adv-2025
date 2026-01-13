@@ -5,6 +5,7 @@ import dataSource from "./config/data-source"
 import swaggerUi from 'swagger-ui-express';
 
 import { useExpressServer } from 'routing-controllers';
+import { startQueueConsumer } from './consumer/battleLog';
 
 dataSource
     .initialize()
@@ -37,4 +38,7 @@ const swaggerDoc = require('./swagger.json')
 app.use('/chat/docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
 
-app.listen(3004, () => console.log("Server started on http://localhost:3004"));
+app.listen(3004, () => {
+    console.log("Server started on http://localhost:3004")
+    startQueueConsumer();
+})

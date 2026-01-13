@@ -201,7 +201,7 @@ export class BattleService implements IBattleService
         {
             const message = new CreateMessageDto()
             message.text = `Атакующий {attackCharId}, Атакуют {defenceCharId}, Бросок атаки {hitRoll}, Урона нет`
-            this._chatService.setLog(authToken, message)
+            this._chatService.sendBattleLog(message)
             return
         }
 
@@ -241,7 +241,7 @@ export class BattleService implements IBattleService
         
         const message = new CreateMessageDto()
         message.text = `Атакующий ${attackCharId}, Атакуют ${defenceCharId}, Бросок атаки ${hitRoll}, Урона ${damage}`
-        this._chatService.setLog(authToken, message)
+        this._chatService.sendBattleLog(message)
 
         await this._characterService.updateCharacter(authToken, defenceCharId, updatingChar)
     }
