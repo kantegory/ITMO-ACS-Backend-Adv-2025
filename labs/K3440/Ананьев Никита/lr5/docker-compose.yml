@@ -1,0 +1,70 @@
+version: '3'
+
+services:
+  db:
+    container_name: db_container
+    image: postgres:alpine
+    restart: always
+    ports: 
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    env_file:
+      - db.env
+  
+  auth:
+    container_name: auth_container
+    restart: always
+    build: ./auth
+    ports:
+      - 8001:8001
+    env_file:
+      - ./auth/auth.env
+    depends_on:
+      - db
+  
+  rent:
+    container_name: rent_container
+    restart: always
+    build: ./rent
+    ports:
+      - 8003:8003
+    env_file:
+      - ./rent/rent.env
+    depends_on:
+      - db
+      - rabbitmq
+
+  
+  messanger:
+    container_name: messanger_container
+    restart: always
+    build: ./messanger
+    ports:
+      - 8002:8002
+    env_file:
+      - ./messenger/messanger.env
+    depends_on:
+      - db
+      - rabbitmq
+  
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbit
+      RABBITMQ_DEFAULT_PASS: rabbit
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:  
+  pgdata: {}
+  rabbitmq_data: {}
